@@ -1,4 +1,4 @@
-package com.example.di
+package com.example.themovieapp.di
 
 import com.example.core.domain.repository.MovieRepository
 import com.example.core.domain.usecases.GetMoviesUseCase
