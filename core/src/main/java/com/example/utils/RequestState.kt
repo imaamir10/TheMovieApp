@@ -1,4 +1,4 @@
-package com.example.common.state
+package com.example.utils
 sealed class RequestState<out T> {
     object Idle : RequestState<Nothing>()
     object Loading : RequestState<Nothing>()

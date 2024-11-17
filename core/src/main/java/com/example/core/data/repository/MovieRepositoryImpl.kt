@@ -1,6 +1,6 @@
 package com.example.core.data.repository
 
-import com.example.common.state.RequestState
+import com.example.utils.RequestState
 import com.example.core.data.mapper.toEntity
 import com.example.core.data.remote.RetrofitApi
 import com.example.core.domain.entities.searchmovies.SearchMoviesResponse

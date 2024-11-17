@@ -1,10 +1,8 @@
 package com.example.utils
 
 import android.util.Log
-import com.example.common.state.RequestState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import okio.IOException

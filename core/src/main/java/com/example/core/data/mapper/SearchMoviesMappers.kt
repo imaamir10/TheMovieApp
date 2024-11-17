@@ -8,17 +8,12 @@ import com.example.core.domain.entities.searchmovies.SearchMoviesResponse
 fun ResultDTO.toEntity(): Movie {
     return Movie(
             id = this.id,
-            title = this.title,
-            name = this.name,
+            name = this.name?:this.title,
             mediaType = this.media_type,
             posterPath = this.poster_path,
             backdropPath = this.backdrop_path,
             overview = this.overview,
-            releaseDate = this.release_date,
-            firstAirDate = this.first_air_date,
-            popularity = this.popularity,
-            voteAverage = this.vote_average,
-            voteCount = this.vote_count
+
     )
 }
 
