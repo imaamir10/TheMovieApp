@@ -15,12 +15,18 @@ import androidx.navigation.compose.rememberNavController
 import com.example.themovieapp.navigation.SetUpNavGraph
 import com.example.themovieapp.theme.TheMovieAppTheme
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.activity.SystemBarStyle
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+                statusBarStyle = SystemBarStyle.dark(Color.Black.toArgb()),
+                navigationBarStyle = SystemBarStyle.dark(Color.Black.toArgb())
+        )
         setContent {
             TheMovieAppTheme {
                 val navController = rememberNavController()
