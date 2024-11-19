@@ -8,6 +8,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import androidx.lifecycle.viewModelScope
 import com.example.core.domain.entities.searchmovies.GroupedItems
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 import javax.inject.Inject
@@ -15,41 +19,59 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val useCases: UseCases) : ViewModel() {
 
-    private val _searchMoviesResult = MutableStateFlow<RequestState<List<GroupedItems>>>(RequestState.Idle)
+    private val _searchMoviesResult =
+        MutableStateFlow<RequestState<List<GroupedItems>>>(RequestState.Idle)
     val searchMoviesResult: StateFlow<RequestState<List<GroupedItems>>> get() = _searchMoviesResult
 
-    fun searchMovies(query: String) {
-        val params = HashMap<String, String>()
-        params["query"] = query
-        params["include_adult"] = "false"
-        params["language"] = "en-US"
-        params["page"] = "1"
+    private val searchQuery = MutableStateFlow("") // Holds the current search query
 
-        viewModelScope.launch {
-            useCases.getMoviesUseCase(params).collect { response ->
-                when(response){
-                    is RequestState.Success -> {
-                        val result = response.data.results.groupBy {
-                            it.mediaType
-                        }.map { entry->
-                            val sortedItems = entry.value.sortedBy { it.name }
-                            GroupedItems(entry.key, sortedItems)
-                        }
-                        _searchMoviesResult.value = RequestState.Success(result)
-                    }
-                    is RequestState.Error -> {
-                        _searchMoviesResult.value = RequestState.Error(response.message)
-                    }
-                    is RequestState.Loading -> {
+    private var searchJob: Job? = null // Keep track of the current search job
+
+
+    init {
+        searchJob = viewModelScope.launch {
+            searchQuery
+                .debounce(500) // Wait for 500ms of inactivity
+                .distinctUntilChanged()
+                .collectLatest { query ->
+                    if (query.isNotBlank()) {
                         _searchMoviesResult.value = RequestState.Loading
-                    }
-                    is RequestState.Idle->{
+                        searchMovies(query)
+                    } else {
                         _searchMoviesResult.value = RequestState.Idle
                     }
+//                    if (query.isNotBlank()) {
+//                        searchJob?.cancel()
+//                        searchMovies(query)
+//                    } else {
+//                        searchJob?.cancel()
+//                        _searchMoviesResult.value = RequestState.Idle
+//
+//                    }
                 }
-            }
         }
     }
 
+    // Function to update the search query
+    fun onSearchQueryChanged(newQuery: String) {
+        searchQuery.value = newQuery
+
+
+    }
+
+
+    private suspend fun searchMovies(query: String) {
+        val params = HashMap<String, String>().apply {
+            this["query"] = query
+            this["include_adult"] = "true"
+            this["language"] = "en-US"
+        }
+
+
+            useCases.getMoviesUseCase(params).collect { response ->
+                _searchMoviesResult.value = response
+            }
+
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.example.themovieapp.presentation.ui.homescreen
 
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
@@ -29,22 +31,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.utils.RequestState
 import com.example.core.domain.entities.searchmovies.GroupedItems
+import com.example.themovieapp.navigation.Screen
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier,viewModel: HomeViewModel = hiltViewModel()) {
+fun HomeScreen(navController: NavHostController, viewModel: HomeViewModel = hiltViewModel()) {
     val context = LocalContext.current
     val searchMoviesResult by viewModel.searchMoviesResult.collectAsStateWithLifecycle()
     var searchTextValue by rememberSaveable { mutableStateOf("") }
-
 
     Scaffold {innerpadding->
         Column(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = modifier
+                modifier = Modifier
                     .padding(innerpadding)
                     .background(Color.Black)
                     .fillMaxSize()
@@ -56,13 +62,17 @@ fun HomeScreen(modifier: Modifier = Modifier,viewModel: HomeViewModel = hiltView
             SearchBar(
                     modifier = Modifier.fillMaxWidth(),
                     text = searchTextValue,
-                    onTextChange = { searchTextValue = it },
-                    onSearchClicked = {
-                        if(searchTextValue.isNotEmpty())
-                            viewModel.searchMovies(searchTextValue)
-                    }
-            )
+                    onTextChange = { searchTextValue = it
+                        viewModel.onSearchQueryChanged(searchTextValue) },
 
+            )
+            if (searchMoviesResult is RequestState.Loading) {
+                LinearProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                )
+            }
             when(searchMoviesResult){
                 is RequestState.Success -> {
                     val result = (searchMoviesResult as RequestState.Success<List<GroupedItems>>).data
@@ -71,23 +81,26 @@ fun HomeScreen(modifier: Modifier = Modifier,viewModel: HomeViewModel = hiltView
                             items(result.size) { position ->
                                 val groupedItems = result[position]
                                 Carousel(
-                                        crouselTitle = groupedItems.mediaType,
+                                        carouselTitle = groupedItems.mediaType,
                                         items = groupedItems.items
-                                )
+                                ){movie->
+                                    val movieJson = Uri.encode(Json.encodeToString(movie))
+                                    navController.navigate(Screen.Detail.route+"/$movieJson")
+                                }
                             }
                         }
                     }
                 }
-                is RequestState.Loading->{
-                    LoadingView()
-                }
 
                 is RequestState.Error->{
-                    val error = (searchMoviesResult as RequestState.Error).getErrorMessage()
-                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+//                    val error = (searchMoviesResult as RequestState.Error).getErrorMessage()
+//                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
                 }
 
-                is RequestState.Idle->{
+//                is RequestState.Idle->{
+//
+//                }
+                else ->{
 
                 }
             }
@@ -142,5 +155,5 @@ fun LoadingView() {
 @Preview
 @Composable
 private fun PreviewHomeScreen() {
-    HomeScreen()
+    HomeScreen(rememberNavController())
 }
