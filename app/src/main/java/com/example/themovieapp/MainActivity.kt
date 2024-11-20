@@ -1,6 +1,8 @@
 package com.example.themovieapp
 
+import android.os.Build
 import android.os.Bundle
+import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -18,19 +20,20 @@ import dagger.hilt.android.AndroidEntryPoint
 import androidx.activity.SystemBarStyle
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import com.example.themovieapp.presentation.MyApp
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         enableEdgeToEdge(
                 statusBarStyle = SystemBarStyle.dark(Color.Black.toArgb()),
                 navigationBarStyle = SystemBarStyle.dark(Color.Black.toArgb())
         )
         setContent {
             TheMovieAppTheme {
-                val navController = rememberNavController()
-                SetUpNavGraph(navController = navController)
+                MyApp()
             }
         }
     }

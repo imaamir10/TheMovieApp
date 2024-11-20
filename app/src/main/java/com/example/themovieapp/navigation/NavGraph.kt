@@ -16,14 +16,14 @@ import com.example.themovieapp.presentation.ui.playerscreen.PlayerScreen
 import kotlinx.serialization.json.Json
 
 @Composable
-fun SetUpNavGraph(navController: NavHostController) {
+fun SetUpNavGraph(navController: NavHostController, onToggleLayoutDirection: () -> Unit) {
     NavHost(
             navController = navController,
             startDestination = Screen.Home.route
 
     ) {
         composable(route = Screen.Home.route) {
-            HomeScreen(navController)
+            HomeScreen(navController,onToggleLayoutDirection = onToggleLayoutDirection)
         }
         composable(
                 route = Screen.Detail.route + "/{$MOVIE_DATA}",
@@ -31,7 +31,7 @@ fun SetUpNavGraph(navController: NavHostController) {
         ) { backStackEntry ->
             val movieData = backStackEntry.arguments?.getString(MOVIE_DATA)
             val movie = movieData?.let { Json.decodeFromString<Movie>(it) }
-            movie?.let { DetailScreen(navController,movie= it) }
+            movie?.let { DetailScreen(navController,movie= it,onToggleLayoutDirection = onToggleLayoutDirection) }
         }
         composable(route = Screen.Player.route) {
             PlayerScreen(navController)

@@ -3,11 +3,13 @@ package com.example.utils
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import okio.IOException
 import retrofit2.Response
 import java.net.UnknownHostException
+import kotlin.coroutines.cancellation.CancellationException
 
 suspend fun <T, R> safeApiCall(
         apiCall: suspend () -> Response<T>,
@@ -17,7 +19,7 @@ suspend fun <T, R> safeApiCall(
     // Emit loading state
     emit(RequestState.Loading)
 
-    try {
+
         // Execute the API call
         val response = apiCall()
 
@@ -33,10 +35,11 @@ suspend fun <T, R> safeApiCall(
             val errorMessage = response.errorBody()?.string() ?: "Unknown error occurred"
             emit(RequestState.Error(errorMessage)) // Emit error for API failure
         }
-    } catch (e: Throwable) {
-        // Handle exceptions and emit error state
-        emit(mapToErrorState(e))
-    }
+
+}.catch { e->
+    // Handle exceptions and emit error state
+    if (e is CancellationException) throw e
+    emit(mapToErrorState(e))
 }.flowOn(Dispatchers.IO) // Ensure the flow runs on the IO dispatcher
 
 

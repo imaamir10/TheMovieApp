@@ -31,7 +31,7 @@ class HomeViewModel @Inject constructor(private val useCases: UseCases) : ViewMo
     init {
         searchJob = viewModelScope.launch {
             searchQuery
-                .debounce(500) // Wait for 500ms of inactivity
+                .debounce(1000) // Wait for 500ms of inactivity
                 .distinctUntilChanged()
                 .collectLatest { query ->
                     if (query.isNotBlank()) {
@@ -40,14 +40,6 @@ class HomeViewModel @Inject constructor(private val useCases: UseCases) : ViewMo
                     } else {
                         _searchMoviesResult.value = RequestState.Idle
                     }
-//                    if (query.isNotBlank()) {
-//                        searchJob?.cancel()
-//                        searchMovies(query)
-//                    } else {
-//                        searchJob?.cancel()
-//                        _searchMoviesResult.value = RequestState.Idle
-//
-//                    }
                 }
         }
     }
@@ -68,9 +60,9 @@ class HomeViewModel @Inject constructor(private val useCases: UseCases) : ViewMo
         }
 
 
-            useCases.getMoviesUseCase(params).collect { response ->
-                _searchMoviesResult.value = response
-            }
+        useCases.getMoviesUseCase(params).collect { response ->
+            _searchMoviesResult.value = response
+        }
 
     }
 

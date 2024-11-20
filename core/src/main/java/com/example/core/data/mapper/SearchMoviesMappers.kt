@@ -10,8 +10,7 @@ fun ResultDTO.toEntity(): Movie {
             id = this.id,
             name = this.name?:this.title,
             mediaType = this.media_type,
-            posterPath = this.poster_path,
-            backdropPath = this.backdrop_path,
+            posterPath = if(!this.poster_path.isNullOrEmpty())this.poster_path else this.backdrop_path,
             overview = this.overview,
 
     )

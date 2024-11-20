@@ -1,22 +1,17 @@
 package com.example.themovieapp.presentation.ui.homescreen
 
 import android.net.Uri
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,34 +21,55 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.utils.RequestState
 import com.example.core.domain.entities.searchmovies.GroupedItems
+import com.example.themovieapp.R
 import com.example.themovieapp.navigation.Screen
+import com.example.themovieapp.presentation.commonui.TopBar
+import com.example.utils.RequestState
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 
 @Composable
-fun HomeScreen(navController: NavHostController, viewModel: HomeViewModel = hiltViewModel()) {
-    val context = LocalContext.current
+fun HomeScreen(
+        navController: NavHostController,
+        viewModel: HomeViewModel = hiltViewModel(),
+        onToggleLayoutDirection: () -> Unit
+) {
+    val keyboardController =
+        LocalSoftwareKeyboardController.current // Access the keyboard controller
+
     val searchMoviesResult by viewModel.searchMoviesResult.collectAsStateWithLifecycle()
     var searchTextValue by rememberSaveable { mutableStateOf("") }
 
-    Scaffold {innerpadding->
+    Scaffold(
+            topBar = {
+                TopBar(
+                        title = stringResource(id = R.string.app_name),
+                        isBackButtonVisible = false,
+                        onActionClick = {
+                            onToggleLayoutDirection()
+                        }
+                )
+            }
+    ) { innerpadding ->
         Column(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .padding(innerpadding)
-                    .background(Color.Black)
                     .fillMaxSize()
+                    .background(Color.Black)
                     .padding(
                             vertical = 8.dp,
                             horizontal = 16.dp
@@ -62,98 +78,102 @@ fun HomeScreen(navController: NavHostController, viewModel: HomeViewModel = hilt
             SearchBar(
                     modifier = Modifier.fillMaxWidth(),
                     text = searchTextValue,
-                    onTextChange = { searchTextValue = it
-                        viewModel.onSearchQueryChanged(searchTextValue) },
+                    onTextChange = {
+                        searchTextValue = it
+                        viewModel.onSearchQueryChanged(searchTextValue)
+                    },
 
-            )
-            if (searchMoviesResult is RequestState.Loading) {
-                LinearProgressIndicator(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
-                )
-            }
-            when(searchMoviesResult){
+                    )
+
+            when (searchMoviesResult) {
+                is RequestState.Loading -> {
+                    LaunchedEffect(Unit) {
+                        keyboardController?.hide()
+                    }
+                    LinearProgressIndicator(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+                    )
+                }
+
                 is RequestState.Success -> {
-                    val result = (searchMoviesResult as RequestState.Success<List<GroupedItems>>).data
+                    val result =
+                        (searchMoviesResult as RequestState.Success<List<GroupedItems>>).data
                     if (result.isNotEmpty()) {
                         LazyColumn(Modifier.fillMaxWidth()) {
-                            items(result.size) { position ->
+//                            itemsIndexed(
+//                                    items = result,
+//                                    key = { _, item -> item.mediaType
+//                                    }
+//                            ){
+//                                _, result ->
+//                                Carousel(
+//                                        modifier = Modifier.animateItem(),
+//                                        carouselTitle = result.mediaType,
+//                                        items = result.items
+//                                ) { movie ->
+//                                    val movieJson = Uri.encode(Json.encodeToString(movie))
+//                                    navController.navigate(Screen.Detail.route + "/$movieJson")
+//                                }
+//                            }
+                            items(
+                                    result.size,
+//                                    key = {
+//                                        it
+//                                    }
+                            ) { position ->
                                 val groupedItems = result[position]
                                 Carousel(
+                                        modifier = Modifier,
                                         carouselTitle = groupedItems.mediaType,
                                         items = groupedItems.items
-                                ){movie->
+                                ) { movie ->
                                     val movieJson = Uri.encode(Json.encodeToString(movie))
-                                    navController.navigate(Screen.Detail.route+"/$movieJson")
+                                    navController.navigate(Screen.Detail.route + "/$movieJson")
                                 }
                             }
                         }
                     }
                 }
 
-                is RequestState.Error->{
-//                    val error = (searchMoviesResult as RequestState.Error).getErrorMessage()
-//                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                is RequestState.Error -> {
+                    val message = searchMoviesResult.getErrorMessage()
+                    message?.let { CenterMessageText(it) }
                 }
 
-//                is RequestState.Idle->{
-//
-//                }
-                else ->{
-
+                is RequestState.Idle -> {
+                    CenterMessageText("Type in the search bar to search movies")
                 }
             }
-
-
-        }
-    }
-
-}
-
-@Composable
-fun ErrorSnackBar(
-        errorMessage: String,
-        onDismiss: () -> Unit
-) {
-    var showSnackbar by rememberSaveable { mutableStateOf(true) }
-
-    if (showSnackbar) {
-        Snackbar(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                ,
-                action = {
-                    TextButton(onClick = {
-                        showSnackbar = false
-                        onDismiss()
-                    }) {
-                        Text(text = "Dismiss", color = MaterialTheme.colorScheme.primary)
-                    }
-                },
-                containerColor = MaterialTheme.colorScheme.error,
-                contentColor = MaterialTheme.colorScheme.onError
-        ) {
-            Text(text = errorMessage)
         }
     }
 }
 
 @Composable
-fun LoadingView() {
-    Column(
+fun CenterMessageText(message: String) {
+    Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.2f)),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(top = 16.dp), // Adjust if needed to position below the search bar
+            contentAlignment = Alignment.Center // Centers the content horizontally and vertically
     ) {
-        CircularProgressIndicator(color = Color.White)
+        Text(
+                text = message,
+                color = Color.White,
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center
+        )
     }
 }
+
+
 @Preview
 @Composable
 private fun PreviewHomeScreen() {
-    HomeScreen(rememberNavController())
+    HomeScreen(
+            rememberNavController(),
+            viewModel = hiltViewModel(),
+            onToggleLayoutDirection = {}
+    )
 }
