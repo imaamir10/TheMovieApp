@@ -15,14 +15,10 @@ suspend fun <T, R> safeApiCall(
         apiCall: suspend () -> Response<T>,
         transform: (T) -> R
 ): Flow<RequestState<R>> = flow {
-
     // Emit loading state
     emit(RequestState.Loading)
-
-
         // Execute the API call
         val response = apiCall()
-
         // Handle the API response
         if (response.isSuccessful) {
             val body = response.body()

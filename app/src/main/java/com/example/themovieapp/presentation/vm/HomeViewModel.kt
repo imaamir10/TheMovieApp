@@ -1,4 +1,6 @@
-package com.example.themovieapp.presentation.ui.homescreen
+@file:OptIn(FlowPreview::class)
+
+package com.example.themovieapp.presentation.vm
 
 import androidx.lifecycle.ViewModel
 import com.example.utils.RequestState
@@ -8,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import androidx.lifecycle.viewModelScope
 import com.example.core.domain.entities.searchmovies.GroupedItems
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce

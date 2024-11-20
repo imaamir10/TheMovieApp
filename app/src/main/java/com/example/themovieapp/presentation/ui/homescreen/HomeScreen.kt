@@ -31,10 +31,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.core.domain.entities.searchmovies.GroupedItems
 import com.example.themovieapp.R
 import com.example.themovieapp.navigation.Screen
 import com.example.themovieapp.presentation.commonui.TopBar
+import com.example.themovieapp.presentation.vm.HomeViewModel
 import com.example.utils.RequestState
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -98,31 +98,11 @@ fun HomeScreen(
                 }
 
                 is RequestState.Success -> {
-                    val result =
-                        (searchMoviesResult as RequestState.Success<List<GroupedItems>>).data
-                    if (result.isNotEmpty()) {
+
+                    val result = searchMoviesResult.getSuccessData()
+                    result?.isNotEmpty()?.let {
                         LazyColumn(Modifier.fillMaxWidth()) {
-//                            itemsIndexed(
-//                                    items = result,
-//                                    key = { _, item -> item.mediaType
-//                                    }
-//                            ){
-//                                _, result ->
-//                                Carousel(
-//                                        modifier = Modifier.animateItem(),
-//                                        carouselTitle = result.mediaType,
-//                                        items = result.items
-//                                ) { movie ->
-//                                    val movieJson = Uri.encode(Json.encodeToString(movie))
-//                                    navController.navigate(Screen.Detail.route + "/$movieJson")
-//                                }
-//                            }
-                            items(
-                                    result.size,
-//                                    key = {
-//                                        it
-//                                    }
-                            ) { position ->
+                            items(result.size) { position ->
                                 val groupedItems = result[position]
                                 Carousel(
                                         modifier = Modifier,
@@ -143,7 +123,7 @@ fun HomeScreen(
                 }
 
                 is RequestState.Idle -> {
-                    CenterMessageText("Type in the search bar to search movies")
+                    CenterMessageText(stringResource(R.string.type_in_the_search_bar_to_search_movies))
                 }
             }
         }
@@ -155,8 +135,8 @@ fun CenterMessageText(message: String) {
     Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 16.dp), // Adjust if needed to position below the search bar
-            contentAlignment = Alignment.Center // Centers the content horizontally and vertically
+                .padding(top = 16.dp),
+            contentAlignment = Alignment.Center
     ) {
         Text(
                 text = message,

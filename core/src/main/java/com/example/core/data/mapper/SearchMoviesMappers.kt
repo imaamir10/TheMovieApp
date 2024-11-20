@@ -5,6 +5,7 @@ import com.example.core.data.dto.searchmovieresponse.SearchMoviesResponseDTO
 import com.example.core.domain.entities.searchmovies.Movie
 import com.example.core.domain.entities.searchmovies.SearchMoviesResponse
 
+@Suppress("UselessCallOnNotNull")
 fun ResultDTO.toEntity(): Movie {
     return Movie(
             id = this.id,

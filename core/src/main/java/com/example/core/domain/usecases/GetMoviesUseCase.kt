@@ -41,7 +41,7 @@ class GetMoviesUseCase(private val remoteRepository: MovieRepository) {
 
                         fetchedMovies.forEach { movie ->
                             val movieList = allMovies.computeIfAbsent(movie.mediaType) { mutableListOf() }
-                            if (movieList.none() { it.id == movie.id }) {
+                            if (movieList.none { it.id == movie.id }) {
                                 movieList.add(movie)
                             }
                         }

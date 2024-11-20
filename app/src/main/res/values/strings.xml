@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">The Movie App</string>
     <string name="detail_screen">Detail Screen</string>
+    <string name="type_in_the_search_bar_to_search_movies">Type in the search bar to search movies</string>
+    <string name="no_image_available">No image available</string>
+    <string name="enter_movie_name_to_search">Enter movie name to search</string>
 </resources>
