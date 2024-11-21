@@ -59,5 +59,6 @@ dependencies {
     ksp(libs.hilt.android.compiler)
     ksp(libs.hilt.compiler)
 
+    //Kotlin X Serialization
     implementation(libs.kotlinx.serialization.json)
 }
