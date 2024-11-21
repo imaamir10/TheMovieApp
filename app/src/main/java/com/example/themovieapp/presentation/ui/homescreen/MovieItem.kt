@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.imageLoader
-import com.example.core.domain.entities.searchmovies.Movie
+import com.example.core.domain.models.searchmovies.Movie
 import com.example.themovieapp.R
 import com.example.themovieapp.utils.imageURl
 

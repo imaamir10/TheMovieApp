@@ -69,7 +69,7 @@ fun HomeScreen(
                 modifier = Modifier
                     .padding(innerpadding)
                     .fillMaxSize()
-                    .background(Color.Black)
+                    .background     (Color.Black)
                     .padding(
                             vertical = 8.dp,
                             horizontal = 16.dp

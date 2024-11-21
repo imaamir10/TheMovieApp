@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.example.core.domain.entities.searchmovies.Movie
+import com.example.core.domain.models.searchmovies.Movie
 import com.example.themovieapp.R
 import com.example.themovieapp.navigation.Screen
 import com.example.themovieapp.presentation.commonui.TopBar

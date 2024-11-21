@@ -3,7 +3,7 @@ package com.example.core.data.repository
 import com.example.utils.RequestState
 import com.example.core.data.mapper.toEntity
 import com.example.core.data.remote.RetrofitApi
-import com.example.core.domain.entities.searchmovies.SearchMoviesResponse
+import com.example.core.domain.models.searchmovies.SearchMoviesResponse
 import com.example.core.domain.repository.MovieRepository
 import com.example.utils.safeApiCall
 import kotlinx.coroutines.flow.Flow

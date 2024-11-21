@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.core.domain.entities.searchmovies.Movie
+import com.example.core.domain.models.searchmovies.Movie
 
 @Composable
 fun Carousel(modifier: Modifier = Modifier, carouselTitle: String, items: List<Movie>, onItemClick: (Movie) -> Unit) {

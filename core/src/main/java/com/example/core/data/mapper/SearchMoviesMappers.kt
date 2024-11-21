@@ -2,8 +2,8 @@ package com.example.core.data.mapper
 
 import com.example.core.data.dto.searchmovieresponse.ResultDTO
 import com.example.core.data.dto.searchmovieresponse.SearchMoviesResponseDTO
-import com.example.core.domain.entities.searchmovies.Movie
-import com.example.core.domain.entities.searchmovies.SearchMoviesResponse
+import com.example.core.domain.models.searchmovies.Movie
+import com.example.core.domain.models.searchmovies.SearchMoviesResponse
 
 @Suppress("UselessCallOnNotNull")
 fun ResultDTO.toEntity(): Movie {

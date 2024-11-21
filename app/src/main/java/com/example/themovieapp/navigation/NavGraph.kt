@@ -8,7 +8,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.core.domain.entities.searchmovies.Movie
+import com.example.core.domain.models.searchmovies.Movie
 import com.example.themovieapp.navigation.NavArgsConstants.MOVIE_DATA
 import com.example.themovieapp.presentation.ui.detailscreen.DetailScreen
 import com.example.themovieapp.presentation.ui.homescreen.HomeScreen

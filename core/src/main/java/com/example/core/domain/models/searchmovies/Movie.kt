@@ -1,4 +1,4 @@
-package com.example.core.domain.entities.searchmovies
+package com.example.core.domain.models.searchmovies
 
 import kotlinx.serialization.Serializable
 

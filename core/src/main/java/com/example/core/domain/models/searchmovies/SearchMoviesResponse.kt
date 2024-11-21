@@ -1,4 +1,4 @@
-package com.example.core.domain.entities.searchmovies
+package com.example.core.domain.models.searchmovies
 
 data class SearchMoviesResponse(
         val page: Int,

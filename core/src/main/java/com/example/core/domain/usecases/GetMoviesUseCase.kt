@@ -1,7 +1,7 @@
 package com.example.core.domain.usecases
 
-import com.example.core.domain.entities.searchmovies.GroupedItems
-import com.example.core.domain.entities.searchmovies.Movie
+import com.example.core.domain.models.searchmovies.GroupedItems
+import com.example.core.domain.models.searchmovies.Movie
 import com.example.utils.RequestState
 import com.example.core.domain.repository.MovieRepository
 import com.example.utils.MAX_RESULT_PAGE_LIMIT
